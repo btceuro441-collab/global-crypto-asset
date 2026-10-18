@@ -564,102 +564,182 @@
     </div>
         
     <!-- Firebase Admin Dashboard Script Integration -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+        getFirestore, 
+        collection, 
+        getDocs, 
+        addDoc, 
+        query, 
+        orderBy, 
+        onSnapshot, 
+        serverTimestamp 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyD2bEOJQ3-IW1nBbLu8dp_oafib6jzZDFE",
-            authDomain: "global-crypto-asset.firebaseapp.com",
-            projectId: "global-crypto-asset",
-            storageBucket: "global-crypto-asset.firebasestorage.app",
-            messagingSenderId: "524248144264",
-            appId: "1:524248144264:web:9188f437897fb540c7023d",
-            measurementId: "G-8DLEG73RMM"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyD2bEOJQ3-IW1nBbLu8dp_oafib6jzZDFE",
+        authDomain: "global-crypto-asset.firebaseapp.com",
+        projectId: "global-crypto-asset",
+        storageBucket: "global-crypto-asset.firebasestorage.app",
+        messagingSenderId: "524248144264",
+        appId: "1:524248144264:web:9188f437897fb540c7023d",
+        measurementId: "G-8DLEG73RMM"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        window.liveCustomers = [];
+    // Make Firestore instance accessible across scripts
+    window.db = db;
+    window.liveCustomers = [];
 
-        async function fetchAllRegisteredUsers() {
-            const customerContainer = document.getElementById('customerListContainer');
-            const tableBody = document.getElementById('firebaseUsersTableBody');
-            
-            if (!customerContainer || !tableBody) return;
+    // Real-Time Firebase Chat Sync for Admin
+    let unsubscribeAdminChat = null;
 
+    window.openWaChat = function(email, name) {
+        window.currentChatEmail = email;
+        document.getElementById('waSidebar').style.display = 'none';
+        document.getElementById('waActiveChat').style.display = 'flex';
+        document.getElementById('waActiveChatTitle').innerText = name;
+
+        if (unsubscribeAdminChat) unsubscribeAdminChat();
+
+        const messagesRef = collection(db, "chats", email, "messages");
+        const q = query(messagesRef, orderBy("timestamp", "asc"));
+
+        unsubscribeAdminChat = onSnapshot(q, (snapshot) => {
+            const chatBox = document.getElementById('waMessagesBox');
+            if (!chatBox) return;
+            chatBox.innerHTML = '';
+
+            if (snapshot.empty) {
+                chatBox.innerHTML = `<div class="wa-msg incoming">Hello, I need assistance with my account.</div>`;
+                return;
+            }
+
+            snapshot.forEach((doc) => {
+                const msg = doc.data();
+                let cssClass = (msg.sender === 'admin' || msg.sender === 'outgoing') ? 'wa-msg outgoing' : 'wa-msg incoming';
+                chatBox.innerHTML += `<div class="${cssClass}">${msg.text}</div>`;
+            });
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }, (error) => {
+            console.error("Error listening to live customer chat:", error);
+        });
+    };
+
+    window.closeWaChat = function() {
+        if (unsubscribeAdminChat) {
+            unsubscribeAdminChat();
+            unsubscribeAdminChat = null;
+        }
+        window.currentChatEmail = null;
+        document.getElementById('waActiveChat').style.display = 'none';
+        document.getElementById('waSidebar').style.display = 'flex';
+        if (typeof window.loadWaChats === "function") {
+            window.loadWaChats();
+        }
+    };
+
+    window.sendWaReply = async function() {
+        const input = document.getElementById('waReplyInput');
+        if (!input || !window.currentChatEmail) return;
+        const text = input.value.trim();
+
+        if (text !== "") {
             try {
-                const querySnapshot = await getDocs(collection(db, "users"));
-                
-                customerContainer.innerHTML = '';
-                tableBody.innerHTML = '';
-                window.liveCustomers = [];
-
-                if (querySnapshot.empty) {
-                    customerContainer.innerHTML = `<div style="font-size:0.78rem; color:#9ca3af; text-align:center; padding:10px;">No registered customers yet.</div>`;
-                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#9ca3af; padding:12px;">No registered customers found in cloud database.</td></tr>`;
-                    return;
-                }
-
-                querySnapshot.forEach((/** @type {import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").DocumentData} */ docSnap) => {
-                    const cust = docSnap.data();
-                    window.liveCustomers.push(cust);
-
-                    const name = cust.name || "User";
-                    const email = cust.email || "N/A";
-                    const ip = cust.ip || "N/A";
-                    const location = cust.location || "Unknown Location";
-                    
-                    let regDate = "Recent";
-                    if (cust.registeredAt && cust.registeredAt.toDate) {
-                        regDate = cust.registeredAt.toDate().toLocaleString();
-                    }
-
-                    // Render card in the Flashing Control Panel list
-                    customerContainer.innerHTML += `
-                        <div class="customer-item" data-email="${email.toLowerCase()}" data-location="${location.toLowerCase()}" onclick="window.selectCustomer('${email}', '${name}', '${ip}', '${location}')" style="background: #0b0f19; border: 1px solid #1f293d; padding: 10px 12px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: border-color 0.2s; margin-bottom: 6px;">
-                            <div>
-                                <div style="font-weight: 700; color: #ffffff; font-size: 0.85rem;">${name}</div>
-                                <div style="font-size: 0.72rem; color: #9ca3af;">${email}</div>
-                                <div style="font-size: 0.7rem; color: #10b981; margin-top: 2px;">🌐 IP: ${ip} (${location})</div>
-                            </div>
-                            <span style="font-size: 0.72rem; color: #60a5fa; font-weight: 700;">Tap to Flash &rarr;</span>
-                        </div>
-                    `;
-
-                    // Render row in the Registered Users Database table
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td style="font-weight: 700; color: #ffffff;">${name}</td>
-                            <td>${email}</td>
-                            <td><span style="color: #38bdf8;">${ip}</span> <span style="color: #10b981; font-size: 0.75rem;">(${location})</span></td>
-                            <td>${regDate}</td>
-                        </tr>
-                    `;
+                await addDoc(collection(db, "chats", window.currentChatEmail, "messages"), {
+                    sender: 'admin',
+                    text: text,
+                    timestamp: serverTimestamp()
                 });
-
-                if (typeof window.loadWaChats === "function") {
-                    window.loadWaChats();
-                }
-
-                if (typeof window.loadAdminTransactions === "function") {
-                    window.loadAdminTransactions();
-                }
-
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
-                }
+                input.value = "";
             } catch (error) {
-                console.error("Error fetching all registered users from Firebase:", error);
+                console.error("Error sending admin reply to Firebase:", error);
+                alert("Failed to send message over cloud connection.");
             }
         }
+    };
 
-        document.addEventListener("DOMContentLoaded", () => {
-            fetchAllRegisteredUsers();
-            setInterval(fetchAllRegisteredUsers, 5000);
-        });
-    </script>
+    async function fetchAllRegisteredUsers() {
+        const customerContainer = document.getElementById('customerListContainer');
+        const tableBody = document.getElementById('firebaseUsersTableBody');
+        
+        if (!customerContainer || !tableBody) return;
+
+        try {
+            const querySnapshot = await getDocs(collection(db, "users"));
+            
+            customerContainer.innerHTML = '';
+            tableBody.innerHTML = '';
+            window.liveCustomers = [];
+
+            if (querySnapshot.empty) {
+                customerContainer.innerHTML = `<div style="font-size:0.78rem; color:#9ca3af; text-align:center; padding:10px;">No registered customers yet.</div>`;
+                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#9ca3af; padding:12px;">No registered customers found in cloud database.</td></tr>`;
+                return;
+            }
+
+            querySnapshot.forEach((docSnap) => {
+                const cust = docSnap.data();
+                window.liveCustomers.push(cust);
+
+                const name = cust.name || "User";
+                const email = cust.email || "N/A";
+                const ip = cust.ip || "N/A";
+                const location = cust.location || "Unknown Location";
+                
+                let regDate = "Recent";
+                if (cust.registeredAt && cust.registeredAt.toDate) {
+                    regDate = cust.registeredAt.toDate().toLocaleString();
+                }
+
+                // Render card in the Flashing Control Panel list
+                customerContainer.innerHTML += `
+                    <div class="customer-item" data-email="${email.toLowerCase()}" data-location="${location.toLowerCase()}" onclick="window.selectCustomer('${email}', '${name}', '${ip}', '${location}')" style="background: #0b0f19; border: 1px solid #1f293d; padding: 10px 12px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: border-color 0.2s; margin-bottom: 6px;">
+                        <div>
+                            <div style="font-weight: 700; color: #ffffff; font-size: 0.85rem;">${name}</div>
+                            <div style="font-size: 0.72rem; color: #9ca3af;">${email}</div>
+                            <div style="font-size: 0.7rem; color: #10b981; margin-top: 2px;">🌐 IP: ${ip} (${location})</div>
+                        </div>
+                        <span style="font-size: 0.72rem; color: #60a5fa; font-weight: 700;">Tap to Flash &rarr;</span>
+                    </div>
+                `;
+
+                // Render row in the Registered Users Database table
+                tableBody.innerHTML += `
+                    <tr>
+                        <td style="font-weight: 700; color: #ffffff;">${name}</td>
+                        <td>${email}</td>
+                        <td><span style="color: #38bdf8;">${ip}</span> <span style="color: #10b981; font-size: 0.75rem;">(${location})</span></td>
+                        <td>${regDate}</td>
+                    </tr>
+                `;
+            });
+
+            if (typeof window.loadWaChats === "function") {
+                window.loadWaChats();
+            }
+
+            if (typeof window.loadAdminTransactions === "function") {
+                window.loadAdminTransactions();
+            }
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        } catch (error) {
+            console.error("Error fetching all registered users from Firebase:", error);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        fetchAllRegisteredUsers();
+        setInterval(fetchAllRegisteredUsers, 5000);
+    });
+            </script>
+    
 
     <!-- Synchronous Admin Control Logic -->
     <script>
