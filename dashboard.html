@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Global Crypto Asset</title>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+
+        /* Top Header */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #1f293d;
+            margin-bottom: 24px;
+        }
+
+        .user-welcome h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .user-avatar-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #131b2e;
+            border: 1px solid #1f293d;
+            padding: 6px 14px;
+            border-radius: 30px;
+        }
+
+        .avatar-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #2563eb;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        /* Crypto Balances Grid (Top Wallets) */
+        .crypto-balances-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        @media (min-width: 640px) {
+            .crypto-balances-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (min-width: 1024px) {
+            .crypto-balances-grid { grid-template-columns: repeat(6, 1fr); }
+        }
+
+        .crypto-balance-card {
+            background-color: #131b2e;
+            border: 1px solid #1f293d;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .crypto-bal-logo {
+            width: 32px !important;
+            height: 32px !important;
+            display: block;
+            margin: 0 auto 8px auto;
+            object-fit: contain;
+        }
+
+        .crypto-bal-name {
+            font-weight: 700;
+            font-size: 0.75rem;
+            color: #9ca3af;
+            text-transform: uppercase;
+        }
+
+        .crypto-bal-value {
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #ffffff;
+            margin-top: 4px;
+        }
+
+        /* Section Blocks */
+        .section-block {
+            padding: 24px 0;
+            border-top: 1px solid #1f293d;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .section-subtitle {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-bottom: 18px;
+        }
+
+        /* Transaction Ledger Table */
+        .ledger-card {
+            background-color: #131b2e;
+            border: 1px solid #1f293d;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        th {
+            color: #9ca3af;
+            padding: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid #1f293d;
+            font-size: 0.75rem;
+        }
+
+        td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #1f293d;
+            color: #d1d5db;
+        }
+
+        .badge-status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            display: inline-block;
+        }
+
+        .status-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .status-success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .status-declined { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+        /* Crypto Deposit Cards Grid */
+        .grid-assets {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (min-width: 640px) {
+            .grid-assets { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (min-width: 1024px) {
+            .grid-assets { grid-template-columns: repeat(6, 1fr); }
+        }
+
+        .asset-card {
+            background-color: #131b2e;
+            border: 1px solid #1f293d;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+
+        .asset-card:hover {
+            border-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .crypto-logo {
+            width: 38px !important;
+            height: 38px !important;
+            display: block;
+            margin: 0 auto 8px auto;
+            object-fit: contain;
+        }
+
+        .asset-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #ffffff;
+        }
+
+        .asset-symbol {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        /* Gas Calculator Card Box */
+        .gas-card {
+            background-color: #131b2e;
+            border: 1px solid #1f293d;
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #9ca3af;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: #0b0f19;
+            border: 1px solid #1f293d;
+            border-radius: 10px;
+            padding: 10px 14px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+        }
+
+        /* Investment & Loan Card Boxes */
+        .grid-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-cards {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .plan-box {
+            background-color: #131b2e;
+            border: 1px solid #1f293d;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .plan-box:hover {
+            border-color: #2563eb;
+        }
+
+        .plan-box.featured {
+            border: 2px solid #2563eb;
+            background-color: #152038;
+        }
+
+        .plan-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .badge-min { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .badge-prem { background: #2563eb; color: #ffffff; }
+        .badge-max { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+
+        .plan-price {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 12px;
+        }
+
+        .plan-price span {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .plan-features li {
+            font-size: 0.85rem;
+            color: #d1d5db;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-action {
+            width: 100%;
+            background-color: #1f293d;
+            color: #ffffff;
+            border: 1px solid #374151;
+            padding: 10px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .btn-action.highlight {
+            background-color: #2563eb;
+            border: none;
+        }
+
+        /* Popup Deposit Address Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-content {
+            background-color: #131b2e;
+            border: 1px solid #1f293d;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .qr-placeholder {
+            background-color: #ffffff;
+            padding: 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 16px 0;
+        }
+
+        .qr-placeholder img {
+            width: 150px;
+            height: 150px;
+            display: block;
+        }
+
+        .address-box {
+            background-color: #0b0f19;
+            border: 1px solid #1f293d;
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 0.75rem;
+            color: #60a5fa;
+            word-break: break-all;
+            margin-bottom: 16px;
+            font-family: monospace;
+        }
+
+        /* Team Gallery Grid */
+        .team-gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .team-gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .team-card {
+            background-color: #131b2e;
+            border: 1px solid #1f293d;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .team-card.featured-card {
+            grid-column: 1 / -1;
+        }
+
+        .team-card img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
+
+        .team-card.featured-card img {
+            height: 320px;
+        }
+
+        .team-card-content {
+            padding: 18px;
+        }
+
+        .team-card-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .team-card-desc {
+            font-size: 0.82rem;
+            color: #9ca3af;
+            line-height: 1.5;
+        }
+
+        /* Floating Admin Chat Widget with Pulsing Green Dot */
+        .chat-floating-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.5);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 99;
+            position: fixed;
+        }
+
+        /* Popping red dot notification badge */
+        .red-dot-notification {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            background-color: #ef4444;
+            border: 2px solid #0b0f19;
+            border-radius: 50%;
+            display: none;
+            animation: pulse-red 1.2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.15); box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .online-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+            animation: pulse-green 1.5s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 320px;
+            height: 400px;
+            background-color: #131b2e;
+            border: 1px solid #1f293d;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background-color: #111827;
+            padding: 12px 16px;
+            border-bottom: 1px solid #1f293d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            padding: 12px;
+            flex: 1;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* CUSTOMER'S OWN MESSAGES = RIGHT SIDE, GREEN (#059669) */
+        .msg-user {
+            background-color: #059669;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 12px 12px 0 12px;
+            max-width: 80%;
+            align-self: flex-end;
+            margin-left: auto;
+            margin-right: 0;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        /* ADMIN SUPPORT MESSAGES = LEFT SIDE, DARK GRAY (#1f293d) */
+        .msg-admin {
+            background-color: #1f293d;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 12px 12px 12px 0;
+            max-width: 80%;
+            align-self: flex-start;
+            margin-left: 0;
+            margin-right: auto;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        .chat-input-row {
+            padding: 10px;
+            border-top: 1px solid #1f293d;
+            display: flex;
+            gap: 6px;
+            background-color: #111827;
+        }
+
+        .chat-input-row input {
+            flex: 1;
+            background-color: #0b0f19;
+            border: 1px solid #1f293d;
+            border-radius: 8px;
+            padding: 8px;
+            color: #ffffff;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        .chat-input-row button {
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="user-welcome">
+                <h1>Investor Dashboard</h1>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="user-avatar-badge">
+                    <div id="userAvatar" class="avatar-circle">A</div>
+                    <span id="userNameDisplay" style="font-weight: 700; color: white;"></span>
+                </div>
+                <button id="logoutBtn" style="background: none; border: 1px solid #ef4444; color: #ef4444; padding: 6px 12px; border-radius: 20px; font-weight: 700; font-size: 0.75rem; cursor: pointer;">Log Out</button>
+            </div>
+        </div>
+
+        <!-- Crypto Balance Cards (Flashed by Admin) -->
+        <div class="crypto-balances-grid">
+            <div class="crypto-balance-card">
+                <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=026" class="crypto-bal-logo" alt="BTC">
+                <div class="crypto-bal-name">Bitcoin</div>
+                <div id="balBtc" class="crypto-bal-value">0.00 BTC</div>
+            </div>
+
+            <div class="crypto-balance-card">
+                <img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=026" class="crypto-bal-logo" alt="ETH">
+                <div class="crypto-bal-name">Ethereum</div>
+                <div id="balEth" class="crypto-bal-value">0.00 ETH</div>
+            </div>
+
+            <div class="crypto-balance-card">
+                <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=026" class="crypto-bal-logo" alt="USDT">
+                <div class="crypto-bal-name">Tether</div>
+                <div id="balUsdt" class="crypto-bal-value">0.00 USDT</div>
+            </div>
+
+            <div class="crypto-balance-card">
+                <img src="https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=026" class="crypto-bal-logo" alt="BNB">
+                <div class="crypto-bal-name">BNB</div>
+                <div id="balBnb" class="crypto-bal-value">0.00 BNB</div>
+            </div>
+
+            <div class="crypto-balance-card">
+                <img src="https://cryptologos.cc/logos/solana-sol-logo.svg?v=026" class="crypto-bal-logo" alt="SOL">
+                <div class="crypto-bal-name">Solana</div>
+                <div id="balSol" class="crypto-bal-value">0.00 SOL</div>
+            </div>
+
+            <div class="crypto-balance-card">
+                <img src="https://cryptologos.cc/logos/litecoin-ltc-logo.svg?v=026" class="crypto-bal-logo" alt="LTC">
+                <div class="crypto-bal-name">Litecoin</div>
+                <div id="balLtc" class="crypto-bal-value">0.00 LTC</div>
+            </div>
+        </div>
+
+          <!-- Transaction Ledger Section -->
+        <div class="ledger-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 class="section-title" style="font-size: 1.1rem; margin: 0;">Recent Transactions Ledger</h2>
+                <span style="font-size: 0.75rem; color: #9ca3af;">Showing Last 15 Activity Items</span>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Reference ID</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionLedgerBody">
+                        <!-- Populated dynamically by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Crypto Deposit Cards -->
+        <section class="section-block">
+            <h2 class="section-title">Tap to Deposit Crypto</h2>
+            <p class="section-subtitle">Select any asset to reveal its deposit address diagram.</p>
+
+            <div class="grid-assets">
+                <div class="asset-card" onclick="openDepositModal('Bitcoin (BTC)', 'bc1qwscewgqszagc930f52uaryah49e4taf4x94hfk', 'https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=026')">
+                    <img src="https://cryptologos.cc/logos/bitcoin-btc-logo.svg?v=026" class="crypto-logo" alt="BTC">
+                    <div class="asset-name">Bitcoin</div>
+                    <div class="asset-symbol">BTC</div>
+                </div>
+
+                <div class="asset-card" onclick="openDepositModal('Ethereum (ETH)', '0x7050d6a8189E335bAFCe61B2636E822b8c5117DA', 'https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=026')">
+                    <img src="https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=026" class="crypto-logo" alt="ETH">
+                    <div class="asset-name">Ethereum</div>
+                    <div class="asset-symbol">ETH</div>
+                </div>
+
+                <div class="asset-card" onclick="openDepositModal('Tether (USDT ERC-20)', '0x7050d6a8189E335bAFCe61B2636E822b8c5117DA', 'https://cryptologos.cc/logos/tether-usdt-logo.svg?v=026')">
+                    <img src="https://cryptologos.cc/logos/tether-usdt-logo.svg?v=026" class="crypto-logo" alt="USDT">
+                    <div class="asset-name">Tether</div>
+                    <div class="asset-symbol">USDT</div>
+                </div>
+
+                <div class="asset-card" onclick="openDepositModal('BNB (BEP-20)', '0x7050d6a8189E335bAFCe61B2636E822b8c5117DA', 'https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=026')">
+                    <img src="https://cryptologos.cc/logos/bnb-bnb-logo.svg?v=026" class="crypto-logo" alt="BNB">
+                    <div class="asset-name">BNB</div>
+                    <div class="asset-symbol">BNB</div>
+                </div>
+
+                <div class="asset-card" onclick="openDepositModal('Solana (SOL)', 'CaSpQ2qMhs9Utkv1swJWqPGF2V3GdWR3TJLeoyDFesh9', 'https://cryptologos.cc/logos/solana-sol-logo.svg?v=026')">
+                    <img src="https://cryptologos.cc/logos/solana-sol-logo.svg?v=026" class="crypto-logo" alt="SOL">
+                    <div class="asset-name">Solana</div>
+                    <div class="asset-symbol">SOL</div>
+                </div>
+
+                <div class="asset-card" onclick="openDepositModal('Litecoin (LTC)', 'ltc1qw3jccp9l2dnpgrsarnns0e6uzyt0wdhd9cze4q', 'https://cryptologos.cc/logos/litecoin-ltc-logo.svg?v=026')">
+                    <img src="https://cryptologos.cc/logos/litecoin-ltc-logo.svg?v=026" class="crypto-logo" alt="LTC">
+                    <div class="asset-name">Litecoin</div>
+                    <div class="asset-symbol">LTC</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Withdrawal Gas Fee Calculator Section -->
+        <section class="section-block">
+            <h2 class="section-title">Withdrawal Gas ⛽ Fee Estimator</h2>
+            <p class="section-subtitle">Select your asset and enter amount to calculate required network gas fee.</p>
+
+            <div class="gas-card">
+                <div class="form-group">
+                    <label>Select Asset</label>
+                    <select id="gasAssetSelect" class="form-control" onchange="calculateGasFee()">
+                        <option value="BTC">Bitcoin (BTC)</option>
+                        <option value="ETH">Ethereum (ETH)</option>
+                        <option value="BNB">BNB (BEP-20)</option>
+                        <option value="USDT">Tether (USDT)</option>
+                        <option value="SOL">Solana (SOL)</option>
+                        <option value="LTC">Litecoin (LTC)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Withdrawal Amount</label>
+                    <input type="number" id="gasAmountInput" class="form-control" placeholder="Enter amount..." oninput="calculateGasFee()">
+                </div>
+
+                <div style="background: #0b0f19; border: 1px solid #2563eb; border-radius: 12px; padding: 16px; margin-top: 16px; margin-bottom: 16px;">
+                    <div style="font-size: 0.8rem; color: #9ca3af; font-weight: 700; text-transform: uppercase;">Required Gas Fee:</div>
+                    <div id="gasFeeResult" style="font-size: 1.4rem; font-weight: 900; color: #10b981; margin-top: 4px;">0.00</div>
+                </div>
+
+                <button class="btn-action highlight" onclick="proceedWithWithdrawal()">Proceed with Withdrawal & Gas Fee</button>
+            </div>
+        </section>
+
+        <!-- Live Trading Markets -->
+        <section class="section-block">
+            <h2 class="section-title">Live Trading View</h2>
+            <p class="section-subtitle">Real-time market valuation ticker.</p>
+            <div id="tradingview-ticker" style="background-color: #131b2e; border-radius: 12px; padding: 4px; width:100%;"></div>
+        </section>
+
+        <!-- Executive Tech & Institutional Trust -->
+        <section class="section-block">
+            <h2 class="section-title">Global Team, Hard Work & Institutional Trust</h2>
+            <p class="section-subtitle">Our dedicated experts work relentlessly around the clock to secure client assets, manage portfolio risk, and process instant payouts.</p>
+            
+            <div class="team-gallery-grid">
+                <div class="team-card featured-card">
+                    <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80" alt="Executive Tech Strategy Session">
+                    <div class="team-card-content">
+                        <div class="team-card-title">Executive Board & Tech Strategy Session (>8 Directors Collaborating)</div>
+                        <div class="team-card-desc">"True financial leadership demands absolute precision and unyielding integrity. Here, our executive board and chief tech officers convene with real-time multi-screen analytics to review global liquidity targets, ensuring every investor account is backed by institutional reserves and fail-safe security."</div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <img src="https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=800&q=80" alt="Multi-Monitor Quantitative Trading Desk">
+                    <div class="team-card-content">
+                        <div class="team-card-title">24/7 Quantitative Trading & Market Surveillance</div>
+                        <div class="team-card-desc">"Our quantitative trading desk operates around the clock. Equipped with high-performance laptops and multi-monitor market feeds, our senior analysts track live crypto liquidity to capture precision arbitrage opportunities while safeguarding capital."</div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=800&q=80" alt="High-Stakes Capital & Tech Board Meeting">
+                    <div class="team-card-content">
+                        <div class="team-card-title">Institutional Approval & Liquidity Guarantees</div>
+                        <div class="team-card-desc">"Trust is earned through transparent execution and rigorous governance. Our corporate leadership team conducts hands-on reviews of credit facility frameworks to guarantee seamless capital access for high-net-worth clients worldwide."</div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=800&q=80" alt="Financial Audit & Analytics Desk">
+                    <div class="team-card-content">
+                        <div class="team-card-title">Rigorous Risk Stress-Testing & Compliance</div>
+                        <div class="team-card-desc">"Leaving nothing to chance is the hallmark of true expertise. Every investment product and loan line undergoes comprehensive data auditing and stress-testing on dedicated analyst workstations prior to market deployment."</div>
+                    </div>
+                </div>
+
+                <div class="team-card">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" alt="Fintech Operations & Payout Hub">
+                    <div class="team-card-content">
+                        <div class="team-card-title">Instant Payout & Loan Authorization Hub</div>
+                        <div class="team-card-desc">"We take pride in setting industry standards for execution speed. Whether you are executing a yield withdrawal or securing an enterprise loan, our tech operations team processes your requests seamlessly 24/7."</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background-color: #131b2e; border: 1px solid #1f293d; border-radius: 20px; padding: 20px; margin-top: 20px;">
+                <h3 style="font-size: 1.05rem; font-weight: 800; color: #ffffff; margin-bottom: 12px;">🎉 Verified Withdrawals & Credit Approvals</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.82rem;">
+                    <div style="display: flex; justify-content: space-between; padding: 10px; background: #0b0f19; border-radius: 10px; border: 1px solid #1f293d;">
+                        <span style="color: #d1d5db;"><b>Marcus V.</b> (Germany) withdrew <b>$14,500.00</b> (BTC)</span>
+                        <span style="color: #10b981; font-weight: 700;">Successful</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 10px; background: #0b0f19; border-radius: 10px; border: 1px solid #1f293d;">
+                        <span style="color: #d1d5db;"><b>Amina K.</b> (Nigeria) received <b>$2,500,000.00</b> Credit Line</span>
+                        <span style="color: #10b981; font-weight: 700;">Approved</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; padding: 10px; background: #0b0f19; border-radius: 10px; border: 1px solid #1f293d;">
+                        <span style="color: #d1d5db;"><b>Somsak P.</b> (Thailand) withdrew <b>$8,200.00</b> (USDT)</span>
+                        <span style="color: #10b981; font-weight: 700;">Successful</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Investment Plans Section -->
+        <section class="section-block">
+            <h2 class="section-title">Crypto Investment Portfolios</h2>
+            <p class="section-subtitle">Choose a plan to link your deposit for automated yields.</p>
+
+            <div class="grid-cards">
+                <div class="plan-box">
+                    <div>
+                        <span class="plan-badge badge-min">Minimum Plan</span>
+                        <div class="plan-price">$850 <span>– $5,000</span></div>
+                        <ul class="plan-features">
+                            <li>✓ Daily Yield Distribution</li>
+                            <li>✓ Automated Rebalancing</li>
+                            <li>✓ 24/7 Instant Withdrawals</li>
+                        </ul>
+                    </div>
+                    <button class="btn-action" onclick="recordDashboardTransaction('Investment - Minimum Plan', '$850.00'); openDepositModal('Minimum Plan Deposit', '0x71C7656EC7ab88b098defB751B7401B5f6d8976F', 'https://cryptologos.cc/logos/tether-usdt-logo.svg?v=026')">Invest Minimum</button>
+                </div>
+
+                <div class="plan-box featured">
+                    <div>
+                        <span class="plan-badge badge-prem">Premium Plan</span>
+                        <div class="plan-price">$5,000 <span>– $45,000</span></div>
+                        <ul class="plan-features">
+                            <li>✓ Accelerated Yield Multiplier</li>
+                            <li>✓ Priority Arbitrage Execution</li>
+                            <li>✓ Dedicated Account Manager</li>
+                        </ul>
+                    </div>
+                    <button class="btn-action highlight" onclick="recordDashboardTransaction('Investment - Premium Plan', '$5,000.00'); openDepositModal('Premium Plan Deposit', '0x71C7656EC7ab88b098defB751B7401B5f6d8976F', 'https://cryptologos.cc/logos/tether-usdt-logo.svg?v=026')">Invest Premium</button>
+                </div>
+
+                <div class="plan-box">
+                    <div>
+                        <span class="plan-badge badge-max">Maximum Plan</span>
+                        <div class="plan-price">$45,000 <span>– Above</span></div>
+                        <ul class="plan-features">
+                            <li>✓ Institutional Grade Returns</li>
+                            <li>✓ Custom Liquidity Solutions</li>
+                            <li>✓ VIP Concierge Support</li>
+                        </ul>
+                    </div>
+                    <button class="btn-action" onclick="recordDashboardTransaction('Investment - Maximum Plan', '$45,000.00'); openDepositModal('Maximum Plan Deposit', '0x71C7656EC7ab88b098defB751B7401B5f6d8976F', 'https://cryptologos.cc/logos/tether-usdt-logo.svg?v=026')">Invest Maximum</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Crypto Loan Tiers -->
+        <section class="section-block">
+            <h2 class="section-title">Crypto Loan Tiers</h2>
+            <p class="section-subtitle">Select any tier to jump directly to instant loan application.</p>
+
+            <div class="grid-cards">
+                <div class="plan-box" onclick="scrollToInstantLoans()">
+                    <div>
+                        <span class="plan-badge badge-min">Minimum Loan</span>
+                        <div class="plan-price">$1,000,000 <span>to $5M</span></div>
+                        <p style="font-size:0.8rem; color:#9ca3af; margin-bottom:14px;">Low interest collateralized credit line with flexible monthly settlement.</p>
+                    </div>
+                    <span style="font-size:0.75rem; color:#60a5fa; font-weight:700;">Tap to apply &rarr;</span>
+                </div>
+
+                <div class="plan-box featured" onclick="scrollToInstantLoans()">
+                    <div>
+                        <span class="plan-badge badge-prem">Premium Loan</span>
+                        <div class="plan-price">$5,000,000 <span>to $10M</span></div>
+                        <p style="font-size:0.8rem; color:#9ca3af; margin-bottom:14px;">Designed for enterprise liquidity needs and large capital expansions.</p>
+                    </div>
+                    <span style="font-size:0.75rem; color:#60a5fa; font-weight:700;">Tap to apply &rarr;</span>
+                </div>
+
+                <div class="plan-box" onclick="scrollToInstantLoans()">
+                    <div>
+                        <span class="plan-badge badge-max">Maximum Loan</span>
+                        <div class="plan-price">$10,000,000 <span>Above</span></div>
+                        <p style="font-size:0.8rem; color:#9ca3af; margin-bottom:14px;">Sovereign-level credit allocations with customized collateral ratios.</p>
+                    </div>
+                    <span style="font-size:0.75rem; color:#60a5fa; font-weight:700;">Tap to apply &rarr;</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Instant Crypto Loans Form Section -->
+        <section id="instantLoansSection" class="section-block">
+            <h2 class="section-title">Instant Crypto Loans</h2>
+            <p class="section-subtitle">Select your preferred asset and amount to request a collateralized loan.</p>
+
+            <div class="gas-card">
+                <div class="form-group">
+                    <label>Select Loan Asset</label>
+                    <select id="loanAssetSelect" class="form-control">
+                        <option value="Bitcoin (BTC)">Bitcoin (BTC)</option>
+                        <option value="Ethereum (ETH)">Ethereum (ETH)</option>
+                        <option value="Tether (USDT)">Tether (USDT)</option>
+                        <option value="BNB (BEP-20)">BNB (BEP-20)</option>
+                        <option value="Solana (SOL)">Solana (SOL)</option>
+                        <option value="Litecoin (LTC)">Litecoin (LTC)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Loan Amount ($ USD equivalent or Coin Amount)</label>
+                    <input type="text" id="loanAmountInput" class="form-control" placeholder="e.g. $50,000.00 or 25 BTC">
+                </div>
+
+                <button class="btn-action highlight" onclick="applyForLoan()">Submit Loan Application for Admin Approval</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Deposit Address Popup Modal -->
+    <div id="depositModal" class="modal-overlay">
+        <div class="modal-content">
+            <button onclick="closeDepositModal()" class="close-btn">✕</button>
+            <img id="modalLogo" src="" class="crypto-logo" alt="Crypto Logo">
+            <h3 id="modalTitle" style="font-size: 1.1rem; font-weight: 800; color: #ffffff;">Deposit Address</h3>
+            
+            <div class="qr-placeholder">
+                <img id="modalQR" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh" alt="Deposit Diagram">
+            </div>
+
+            <p style="font-size: 0.75rem; color: #9ca3af; margin-bottom: 6px;">Send funds to the official deposit address below:</p>
+            <div id="modalAddress" class="address-box">0x71C7656EC7ab88b098defB751B7401B5f6d8976F</div>
+
+            <button onclick="copyAddress()" class="btn-action highlight" style="width: 100%;">Copy Address</button>
+        </div>
+    </div>
+
+       <!-- Floating Live Chat Widget -->
+    <button class="chat-floating-btn" onclick="toggleChat()">
+        <i data-lucide="message-square" style="width: 18px; height: 18px;"></i> Live Support <span class="online-dot"></span>
+        <span id="chatRedDot" class="red-dot-notification"></span>
+    </button>
+
+    <div id="chatWindow" class="chat-window">
+        <div class="chat-header">
+            <div style="font-size: 0.85rem; font-weight: 800; color: #ffffff; display: flex; align-items: center; gap: 6px;">
+                <span class="online-dot"></span> Admin Support (Online)
+            </div>
+            <button onclick="toggleChat()" style="background: none; border: none; color: #9ca3af; cursor: pointer;">✕</button>
+        </div>
+        <div id="chatMessages" class="chat-messages">
+            <!-- Loaded dynamically from Firebase -->
+        </div>
+        <div class="chat-input-row">
+            <input type="text" id="chatInput" placeholder="Type message to admin...">
+            <button onclick="sendChatMessage()">Send</button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        /**
+         * @param {string} title
+         * @param {string} address
+         * @param {string} logo
+         */
+        function openDepositModal(title, address, logo) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalAddress').innerText = address;
+            document.getElementById('modalLogo').src = logo;
+            document.getElementById('modalQR').src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(address);
+            document.getElementById('depositModal').style.display = 'flex';
+        }
+
+        function closeDepositModal() {
+            document.getElementById('depositModal').style.display = 'none';
+        }
+
+        function copyAddress() {
+            const addressText = document.getElementById('modalAddress').innerText;
+            navigator.clipboard.writeText(addressText);
+            alert("Deposit address copied to clipboard!");
+        }
+
+        function scrollToInstantLoans() {
+            const section = document.getElementById('instantLoansSection');
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function toggleChat() {
+            const chatWin = document.getElementById('chatWindow');
+            const redDot = document.getElementById('chatRedDot');
+            if (chatWin.style.display === 'flex') {
+                chatWin.style.display = 'none';
+            } else {
+                chatWin.style.display = 'flex';
+                // Clear notification red dot when chat is opened/read
+                if (redDot) redDot.style.display = 'none';
+                localStorage.setItem('gca_chat_unread_' + (localStorage.getItem('gca_current_user_email') || ''), 'false');
+            }
+        }
+
+        // Gas Fee Calculation Logic
+        function calculateGasFee() {
+            const asset = document.getElementById('gasAssetSelect').value;
+            const amount = parseFloat(document.getElementById('gasAmountInput').value) || 0;
+            let fee = "0.00";
+
+            if (asset === 'BTC') {
+                if (amount > 10) fee = "1 BTC";
+                else if (amount > 6.5) fee = "0.06 BTC";
+                else if (amount >= 2) fee = "0.02 BTC";
+                else if (amount >= 1) fee = "0.01 BTC";
+            } else if (asset === 'ETH') {
+                if (amount > 10000) fee = "5 Ethereum";
+                else if (amount > 5000) fee = "3.2 Ethereum";
+                else if (amount > 3000) fee = "2.5 Ethereum";
+                else if (amount >= 1000) fee = "1.5 Ethereum";
+                else fee = "0.5 Ethereum";
+            } else if (asset === 'BNB') {
+                if (amount >= 50000) fee = "15 BNB";
+                else if (amount >= 40000) fee = "10 BNB";
+                else if (amount >= 30000) fee = "8 BNB";
+                else if (amount >= 20000) fee = "5 BNB";
+                else if (amount >= 10000) fee = "3 BNB";
+                else fee = "1 BNB";
+            } else if (asset === 'USDT') {
+                if (amount >= 40000000) fee = "25,000 USDT";
+                else if (amount >= 25000000) fee = "20,000 USDT";
+                else if (amount >= 15000000) fee = "15,000 USDT";
+                else if (amount >= 5000000) fee = "10,000 USDT";
+                else if (amount >= 1000000) fee = "5,000 USDT";
+                else fee = "2,000 USDT";
+            } else if (asset === 'SOL') {
+                if (amount >= 40000) fee = "50 Solana";
+                else if (amount >= 25000) fee = "40 Solana";
+                else if (amount >= 10000) fee = "30 Solana";
+                else if (amount >= 5000) fee = "20 Solana";
+                else if (amount >= 2500) fee = "10 Solana";
+                else fee = "5 Solana";
+            } else if (asset === 'LTC') {
+                if (amount >= 10000000) fee = "120 Litecoin";
+                else if (amount >= 5000000) fee = "90 Litecoin";
+                else if (amount >= 2000000) fee = "50 Litecoin";
+                else fee = "30 Litecoin";
+            }
+
+            document.getElementById('gasFeeResult').innerText = fee;
+            return fee;
+        }
+
+        function proceedWithWithdrawal() {
+            const asset = document.getElementById('gasAssetSelect').value;
+            const amount = parseFloat(document.getElementById('gasAmountInput').value) || 0;
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid withdrawal amount.');
+                return;
+            }
+            const fee = calculateGasFee();
+            recordDashboardTransaction(`Withdrawal (${asset})`, `${amount} ${asset} (Gas Fee: ${fee})`, asset, amount);
+            alert(`Withdrawal request of ${amount} ${asset} submitted! Required gas fee (${fee}) recorded as Pending in ledger.`);
+            document.getElementById('gasAmountInput').value = '';
+        }
+
+        function applyForLoan() {
+            const asset = document.getElementById('loanAssetSelect').value;
+            const amount = document.getElementById('loanAmountInput').value.trim();
+            if (!amount) {
+                alert('Please enter a loan amount.');
+                return;
+            }
+            recordDashboardTransaction(`Loan Request (${asset})`, amount, null, 0);
+            alert(`Your loan application for ${amount} in ${asset} has been submitted successfully and is pending admin approval!`);
+            document.getElementById('loanAmountInput').value = '';
+        }
+
+        /**
+         * @param {string} assetSymbol
+         * @param {string} email
+         */
+        function getAssetStorageKey(assetSymbol, email) {
+            let key = 'gca_bal_btc';
+            if (assetSymbol === 'ETH') key = 'gca_bal_eth';
+            else if (assetSymbol === 'USDT') key = 'gca_bal_usdt';
+            else if (assetSymbol === 'BNB') key = 'gca_bal_bnb';
+            else if (assetSymbol === 'SOL') key = 'gca_bal_sol';
+            else if (assetSymbol === 'LTC') key = 'gca_bal_ltc';
+            return email ? `${key}_${email}` : key;
+        }
+
+        function getUserDashboardTransactionsKey() {
+            const email = localStorage.getItem('gca_current_user_email') || 'default_user';
+            return `gca_dashboard_tx_${email}`;
+        }
+
+        function syncFlashedBalances() {
+            const email = localStorage.getItem('gca_current_user_email') || '';
+            const txKey = getUserDashboardTransactionsKey();
+
+            /** @type {Array<{id: string, customerName?: string, type: string, amount: string, status: string, assetSymbol?: string, withdrawAmount?: number, deducted?: boolean}>} */
+            let userTransactions = JSON.parse(localStorage.getItem(txKey)) || [];
+            /** @type {Array<{id: string, customerName?: string, type: string, amount: string, status: string, assetSymbol?: string, withdrawAmount?: number, deducted?: boolean}>} */
+            let globalTransactions = JSON.parse(localStorage.getItem('gca_transactions')) || [];
+            let updated = false;
+
+            userTransactions.forEach(
+                /** @param {{id: string, customerName?: string, type: string, amount: string, status: string, assetSymbol?: string, withdrawAmount?: number, deducted?: boolean}} userTx */
+                (userTx) => {
+                let match = globalTransactions.find(
+                    /** @param {{id: string, customerName?: string, type: string, amount: string, status: string}} gTx */
+                    (gTx) => gTx.id === userTx.id
+                );
+                if (match && match.status !== userTx.status) {
+                    userTx.status = match.status;
+                    updated = true;
+                }
+
+                if ((userTx.status === 'Approved' || userTx.status === 'Successful') && !userTx.deducted) {
+                    if (userTx.type && userTx.type.startsWith('Withdrawal') && userTx.assetSymbol && userTx.withdrawAmount) {
+                        let storageKey = getAssetStorageKey(userTx.assetSymbol, email);
+                        let currentBalStr = localStorage.getItem(storageKey) || (userTx.assetSymbol === 'USDT' ? '$0.00' : `0.00 ${userTx.assetSymbol}`);
+                        
+                        let cleanNum = parseFloat(currentBalStr.replace(/[^0-9.]/g, '')) || 0;
+                        let newNum = Math.max(0, cleanNum - userTx.withdrawAmount);
+
+                        let newBalStr = userTx.assetSymbol === 'USDT' ? `$${newNum.toLocaleString(undefined, {minimumFractionDigits: 2})}` : `${newNum} ${userTx.assetSymbol}`;
+                        localStorage.setItem(storageKey, newBalStr);
+                        userTx.deducted = true;
+                        updated = true;
+                    }
+                }
+            });
+
+            if (updated) {
+                localStorage.setItem(txKey, JSON.stringify(userTransactions));
+            }
+
+            document.getElementById('balBtc').innerText = localStorage.getItem(`gca_bal_btc_${email}`) || localStorage.getItem('gca_bal_btc') || '0.00 BTC';
+            document.getElementById('balEth').innerText = localStorage.getItem(`gca_bal_eth_${email}`) || localStorage.getItem('gca_bal_eth') || '0.00 ETH';
+            document.getElementById('balUsdt').innerText = localStorage.getItem(`gca_bal_usdt_${email}`) || localStorage.getItem('gca_bal_usdt') || '0.00 USDT';
+            document.getElementById('balBnb').innerText = localStorage.getItem(`gca_bal_bnb_${email}`) || localStorage.getItem('gca_bal_bnb') || '0.00 BNB';
+            document.getElementById('balSol').innerText = localStorage.getItem(`gca_bal_sol_${email}`) || localStorage.getItem('gca_bal_sol') || '0.00 SOL';
+            document.getElementById('balLtc').innerText = localStorage.getItem(`gca_bal_ltc_${email}`) || localStorage.getItem('gca_bal_ltc') || '0.00 LTC';
+        }
+
+        /**
+         * @param {string} type
+         * @param {string} amount
+         * @param {string} [assetSymbol]
+         * @param {number} [withdrawAmount]
+         */
+        function recordDashboardTransaction(type, amount, assetSymbol, withdrawAmount = 0) {
+            const txKey = getUserDashboardTransactionsKey();
+            /** @type {Array<{id: string, customerName: string, type: string, amount: string, status: string, assetSymbol?: string, withdrawAmount?: number, deducted?: boolean}>} */
+            let transactions = JSON.parse(localStorage.getItem(txKey)) || [];
+            
+            const customerName = localStorage.getItem('gca_current_user_name') || 'Investor';
+
+            const newTx = {
+                id: 'GCA-' + Math.floor(100000 + Math.random() * 900000),
+                customerName: customerName,
+                type: type,
+                amount: amount,
+                status: 'Pending',
+                assetSymbol: assetSymbol,
+                withdrawAmount: withdrawAmount,
+                deducted: false
+            };
+            
+            transactions.unshift(newTx);
+            if (transactions.length > 15) {
+                transactions = transactions.slice(0, 15);
+            }
+            
+            localStorage.setItem(txKey, JSON.stringify(transactions));
+            
+            /** @type {Array<{id: string, customerName: string, type: string, amount: string, status: string}>} */
+            let globalTransactions = JSON.parse(localStorage.getItem('gca_transactions')) || [];
+            globalTransactions.unshift(newTx);
+            localStorage.setItem('gca_transactions', JSON.stringify(globalTransactions));
+
+            loadLedger();
+        }
+
+        function loadLedger() {
+            const tbody = document.getElementById('transactionLedgerBody');
+            if (!tbody) return;
+            
+            const txKey = getUserDashboardTransactionsKey();
+            /** @type {Array<{id: string, customerName?: string, type: string, amount: string, status: string}>} */
+            let transactions = JSON.parse(localStorage.getItem(txKey)) || [];
+            transactions = transactions.slice(0, 15);
+
+            /** @type {Array<{id: string, customerName?: string, type: string, amount: string, status: string}>} */
+            let globalTransactions = JSON.parse(localStorage.getItem('gca_transactions')) || [];
+
+            let hasChanges = false;
+            transactions.forEach(
+                /** @param {{id: string, customerName?: string, type: string, amount: string, status: string}} tx */
+                (tx) => {
+                let adminMatch = globalTransactions.find(
+                    /** @param {{id: string, customerName?: string, type: string, amount: string, status: string}} g */
+                    (g) => g.id === tx.id
+                );
+                if (adminMatch && adminMatch.status !== tx.status) {
+                    tx.status = adminMatch.status;
+                    hasChanges = true;
+                }
+            });
+
+            if (hasChanges) {
+                localStorage.setItem(txKey, JSON.stringify(transactions));
+            }
+
+            tbody.innerHTML = '';
+            
+            if (transactions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #9ca3af; padding: 20px;">No recent transactions found.</td></tr>`;
+                return;
+            }
+
+            transactions.forEach(
+                /** @param {{id: string, customerName?: string, type: string, amount: string, status: string}} tx */
+                (tx) => {
+                let badgeClass = 'status-pending';
+                let displayStatus = tx.status;
+                
+                if (tx.status === 'Approved' || tx.status === 'Successful') {
+                    badgeClass = 'status-success';
+                    displayStatus = 'Successful';
+                } else if (tx.status === 'Rejected' || tx.status === 'Declined') {
+                    badgeClass = 'status-declined';
+                    displayStatus = 'Declined';
+                }
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td><b>${tx.id}</b></td>
+                        <td>${tx.type}</td>
+                        <td>${tx.amount}</td>
+                        <td><span class="badge-status ${badgeClass}">${displayStatus}</span></td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (localStorage.getItem("gca_user_logged_in") !== "true") {
+                window.location.href = "index.html";
+                return;
+            }
+
+            const savedName = localStorage.getItem('gca_current_user_name') || 'Investor';
+            const nameDisplay = document.getElementById('userNameDisplay');
+            if (nameDisplay) nameDisplay.innerText = savedName;
+            const avatar = document.getElementById('userAvatar');
+            if (avatar && savedName) avatar.innerText = savedName.charAt(0).toUpperCase();
+
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function() {
+                    localStorage.removeItem("gca_user_logged_in");
+                    window.location.href = "index.html";
+                });
+            }
+
+            loadLedger();
+            syncFlashedBalances();
+            calculateGasFee();
+
+            window.addEventListener('storage', () => {
+                loadLedger();
+                syncFlashedBalances();
+            });
+            setInterval(loadLedger, 1500);
+            setInterval(syncFlashedBalances, 1000);
+
+            const container = document.getElementById('tradingview-ticker');
+            if (container) {
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js';
+                script.async = true;
+                script.text = JSON.stringify({
+                    "symbols": [
+                        {"proName": "BITSTAMP:BTCUSD", "title": "Bitcoin"},
+                        {"proName": "BITSTAMP:ETHUSD", "title": "Ethereum"},
+                        {"proName": "BINANCE:USDTUSDT", "title": "Tether"},
+                        {"proName": "BINANCE:BNBUSD", "title": "BNB"},
+                        {"proName": "BINANCE:SOLUSD", "title": "Solana"},
+                        {"proName": "BITSTAMP:LTCUSD", "title": "Litecoin"}
+                    ],
+                    "showSymbolLogo": true,
+                    "colorTheme": "dark",
+                    "isTransparent": true,
+                    "displayMode": "adaptive",
+                    "locale": "en"
+                });
+                container.appendChild(script);
+            }
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+
+    <!-- Firebase Customer Dashboard Script Integration with Fully Typed Parameters & Unread Red Dot -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            query, 
+            orderBy, 
+            onSnapshot, 
+            serverTimestamp 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD2bEOJQ3-IW1nBbLu8dp_oafib6jzZDFE",
+            authDomain: "global-crypto-asset.firebaseapp.com",
+            projectId: "global-crypto-asset",
+            storageBucket: "global-crypto-asset.firebasestorage.app",
+            messagingSenderId: "524248144264",
+            appId: "1:524248144264:web:9188f437897fb540c7023d",
+            measurementId: "G-8DLEG73RMM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Listen to admin messages in real-time with explicit type annotations
+        function listenToUserChat() {
+            const email = localStorage.getItem('gca_current_user_email');
+            if (!email) return;
+
+            const chatRef = collection(db, "chats", email, "messages");
+            const q = query(chatRef, orderBy("timestamp", "asc"));
+
+            onSnapshot(q, /** @param {import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").QuerySnapshot} snapshot */ (snapshot) => {
+                const chatBox = document.getElementById('chatMessages');
+                const chatWin = document.getElementById('chatWindow');
+                const redDot = document.getElementById('chatRedDot');
+                if (!chatBox) return;
+                chatBox.innerHTML = '';
+
+                if (snapshot.empty) {
+                    chatBox.innerHTML = `<div class="msg-admin">Hello! Welcome to Live Support. How can we help you today?</div>`;
+                    return;
+                }
+
+                let lastMsgSender = '';
+                snapshot.forEach(/** @param {import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").DocumentData} doc */ (doc) => {
+                    const msg = doc.data();
+                    lastMsgSender = msg.sender;
+                    let isCustomer = (msg.sender === 'user' || msg.sender === 'incoming');
+                    let cssClass = isCustomer ? 'msg-user' : 'msg-admin';
+                    chatBox.innerHTML += `<div class="${cssClass}">${msg.text}</div>`;
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+
+                // Trigger red dot notification if the latest message is from admin and chat window is closed
+                const isChatOpen = chatWin && chatWin.style.display === 'flex';
+                if ((lastMsgSender === 'admin' || lastMsgSender === 'outgoing') && !isChatOpen) {
+                    if (redDot) redDot.style.display = 'block';
+                }
+            }, /** @param {Error} error */ (error) => {
+                console.error("Error connecting to Firebase chat listener:", error);
+            });
+        }
+
+        // Send user message to Firebase
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const email = localStorage.getItem('gca_current_user_email');
+            if (!input || !email) return;
+            
+            const msg = input.value.trim();
+            if (msg !== "") {
+                try {
+                    await addDoc(collection(db, "chats", email, "messages"), {
+                        sender: 'user',
+                        text: msg,
+                        timestamp: serverTimestamp()
+                    });
+                    input.value = "";
+                } catch (err) {
+                    console.error("Error sending user chat message:", err);
+                }
+            }
+        }
+
+        window.sendChatMessage = sendChatMessage;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            listenToUserChat();
+        });
+    </script>
+</body>
+</html>
