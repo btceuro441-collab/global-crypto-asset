@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Global Crypto Asset</title>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 10px;
+        }
+
+        /* Top Header */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #1f293d;
+            margin-bottom: 20px;
+        }
+
+        .admin-title h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-badge {
+            background-color: #dc2626;
+            color: #ffffff;
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Grid Layout */
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 1024px) {
+            .admin-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card-box {
+            background-color: #131b2e;
+            border: 1px solid #1f293d;
+            border-radius: 20px;
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #1f293d;
+            padding-bottom: 10px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #9ca3af;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: #0b0f19;
+            border: 1px solid #1f293d;
+            border-radius: 10px;
+            padding: 8px 10px;
+            color: #ffffff;
+            font-size: 0.82rem;
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: #2563eb;
+        }
+
+        /* Individual Action Buttons */
+        .crypto-btn-group {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .btn-flash-single {
+            flex: 1;
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-flash-single:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-edit-single {
+            flex: 1;
+            background-color: #059669;
+            color: #ffffff;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-edit-single:hover {
+            background-color: #047857;
+        }
+
+        /* Table Design */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            min-width: 400px;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.8rem;
+        }
+
+        th {
+            background-color: #111827;
+            color: #9ca3af;
+            padding: 8px 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border-bottom: 1px solid #1f293d;
+            font-size: 0.72rem;
+        }
+
+        td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #1f293d;
+            color: #d1d5db;
+            word-break: break-word;
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+            margin-bottom: 2px;
+        }
+
+        .btn-approve { background-color: #10b981; color: white; }
+        .btn-reject { background-color: #ef4444; color: white; }
+
+        /* Live Support Chat Container */
+        .wa-container {
+            display: flex;
+            flex-direction: column;
+            background-color: #0b0f19;
+            border: 1px solid #1f293d;
+            border-radius: 14px;
+            overflow: hidden;
+            height: 380px;
+        }
+
+        .wa-sidebar {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wa-chat-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-bottom: 1px solid #1f293d;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .wa-chat-item:hover {
+            background-color: #1f293d;
+        }
+
+        .wa-chat-item.favorite {
+            background-color: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .wa-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        /* Popping red dot indicator */
+        .red-dot {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 11px;
+            height: 11px;
+            background-color: #ef4444;
+            border: 2px solid #0b0f19;
+            border-radius: 50%;
+            animation: pulse-red-dot 1.2s infinite;
+        }
+
+        @keyframes pulse-red-dot {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.15); box-shadow: 0 0 0 5px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .wa-chat-info {
+            flex: 1;
+            margin-left: 10px;
+            overflow: hidden;
+        }
+
+        .wa-chat-name {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .wa-chat-preview {
+            font-size: 0.72rem;
+            color: #9ca3af;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .unread-badge {
+            background-color: #ef4444;
+            color: white;
+            font-size: 0.62rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 700;
+            animation: pulse-badge 1.5s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0% { transform: scale(0.95); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.9; }
+        }
+
+        .wa-chat-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .fav-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+
+        .fav-btn.active {
+            color: #f59e0b;
+        }
+
+        /* Active Chat Window */
+        .wa-active-chat {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .wa-chat-header {
+            background-color: #111827;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #1f293d;
+        }
+
+        .wa-messages-box {
+            flex: 1;
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background-color: #0b0f19;
+        }
+
+        .wa-msg {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .wa-msg.incoming {
+            background-color: #1f293d;
+            color: #ffffff;
+            align-self: flex-start;
+            margin-right: auto;
+            margin-left: 0;
+            border-top-left-radius: 2px;
+        }
+
+        .wa-msg.outgoing {
+            background-color: #059669;
+            color: #ffffff;
+            align-self: flex-end;
+            margin-left: auto;
+            margin-right: 0;
+            border-top-right-radius: 2px;
+        }
+
+        .wa-input-row {
+            padding: 8px;
+            background-color: #111827;
+            display: flex;
+            gap: 6px;
+            border-top: 1px solid #1f293d;
+        }
+
+        .online-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+  <button onclick="adminLogout()" style="margin: 16px; background: none; border: 1px solid #ef4444; color: #ef4444; padding: 6px 12px; border-radius: 8px; font-weight: 700; cursor: pointer;">Log Out Admin</button>
+
+  <div class="container">
+        <!-- Top Header Bar -->
+        <div class="top-bar">
+            <div class="admin-title">
+                <h1>Control Panel <span class="admin-badge">Admin</span></h1>
+            </div>
+        </div>
+
+        <div class="admin-grid">
+
+            <!-- 1. Registered Customers & Individual Crypto Flashing -->
+            <div class="card-box">
+                <div class="card-title">
+                    <i data-lucide="users"></i> Registered Customers & Flashing
+                </div>
+                <p style="font-size: 0.78rem; color: #9ca3af; margin-bottom: 14px;">Select a customer to flash or edit individual crypto balances.</p>
+
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <input type="text" id="customerSearchInput" class="form-control" placeholder="Search customer by email or country..." onkeyup="filterCustomerList()">
+                </div>
+              
+                <!-- Scrollable customer list -->
+                <div id="customerListContainer" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; max-height: 180px; overflow-y: auto;">
+                    <!-- Dynamically populated customer list -->
+                </div>
+
+                <!-- Active Flash Control Panel -->
+                <div id="flashControlPanel" style="display: none; background: #0b0f19; border: 1px solid #2563eb; border-radius: 12px; padding: 14px; margin-top: 12px;">
+                    <h3 id="selectedCustomerTitle" style="font-size: 0.9rem; font-weight: 800; color: #ffffff; margin-bottom: 2px;">Managing: None</h3>
+                    <div id="selectedCustomerMeta" style="font-size: 0.72rem; color: #10b981; font-weight: 700; margin-bottom: 12px;">IP: N/A | Location: N/A</div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <!-- BTC -->
+                        <div class="form-group">
+                            <label>Bitcoin (BTC)</label>
+                            <input type="text" id="flashBtc" class="form-control" placeholder="0.00 BTC">
+                            <div class="crypto-btn-group">
+                                <button type="button" class="btn-flash-single" onclick="flashSingleCrypto('btc', 'BTC')">Flash</button>
+                                <button type="button" class="btn-edit-single" onclick="flashSingleCrypto('btc', 'BTC')">Edit</button>
+                            </div>
+                        </div>
+
+                        <!-- ETH -->
+                        <div class="form-group">
+                            <label>Ethereum (ETH)</label>
+                            <input type="text" id="flashEth" class="form-control" placeholder="0.00 ETH">
+                            <div class="crypto-btn-group">
+                                <button type="button" class="btn-flash-single" onclick="flashSingleCrypto('eth', 'ETH')">Flash</button>
+                                <button type="button" class="btn-edit-single" onclick="flashSingleCrypto('eth', 'ETH')">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px;">
+                        <!-- USDT -->
+                        <div class="form-group">
+                            <label>Tether (USDT)</label>
+                            <input type="text" id="flashUsdt" class="form-control" placeholder="$0.00">
+                            <div class="crypto-btn-group">
+                                <button type="button" class="btn-flash-single" onclick="flashSingleCrypto('usdt', 'USDT')">Flash</button>
+                                <button type="button" class="btn-edit-single" onclick="flashSingleCrypto('usdt', 'USDT')">Edit</button>
+                            </div>
+                        </div>
+
+                        <!-- BNB -->
+                        <div class="form-group">
+                            <label>BNB</label>
+                            <input type="text" id="flashBnb" class="form-control" placeholder="0.00 BNB">
+                            <div class="crypto-btn-group">
+                                <button type="button" class="btn-flash-single" onclick="flashSingleCrypto('bnb', 'BNB')">Flash</button>
+                                <button type="button" class="btn-edit-single" onclick="flashSingleCrypto('bnb', 'BNB')">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px;">
+                        <!-- SOL -->
+                        <div class="form-group">
+                            <label>Solana (SOL)</label>
+                            <input type="text" id="flashSol" class="form-control" placeholder="0.00 SOL">
+                            <div class="crypto-btn-group">
+                                <button type="button" class="btn-flash-single" onclick="flashSingleCrypto('sol', 'SOL')">Flash</button>
+                                <button type="button" class="btn-edit-single" onclick="flashSingleCrypto('sol', 'SOL')">Edit</button>
+                            </div>
+                        </div>
+
+                        <!-- LTC -->
+                        <div class="form-group">
+                            <label>Litecoin (LTC)</label>
+                            <input type="text" id="flashLtc" class="form-control" placeholder="0.00 LTC">
+                            <div class="crypto-btn-group">
+                                <button type="button" class="btn-flash-single" onclick="flashSingleCrypto('ltc', 'LTC')">Flash</button>
+                                <button type="button" class="btn-edit-single" onclick="flashSingleCrypto('ltc', 'LTC')">Edit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Live Support Consoles (Favorites ⭐ & All Chats with Top Priority & Red Dot) -->
+            <div class="card-box">
+                <div class="card-title">
+                    <i data-lucide="message-square"></i> Live Support <span class="online-dot"></span>
+                </div>
+
+                <div class="wa-container">
+                    <!-- Active Chat View -->
+                    <div id="waActiveChat" class="wa-active-chat">
+                        <div class="wa-chat-header">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <button onclick="closeWaChat()" style="background:none; border:none; color:#9ca3af; cursor:pointer; font-size:1.1rem;">←</button>
+                                <span id="waActiveChatTitle" style="font-weight: 700; font-size: 0.88rem; color: white;">Customer Name</span>
+                            </div>
+                            <span style="font-size: 0.72rem; color: #10b981; font-weight: 700;">Online</span>
+                        </div>
+                        <div id="waMessagesBox" class="wa-messages-box">
+                            <!-- Messages loaded here -->
+                        </div>
+                        <div class="wa-input-row">
+                            <input type="text" id="waReplyInput" class="form-control" placeholder="Type a reply...">
+                            <button type="button" class="btn-flash-single" style="width: auto; padding: 0 14px;" onclick="sendWaReply()">Send</button>
+                        </div>
+                    </div>
+
+                    <!-- Dual Boxes: Favorites ⭐ & All Chats (Scrollable) -->
+                    <div id="waSidebar" class="wa-sidebar">
+                        <div style="padding: 8px 12px; font-size: 0.72rem; font-weight: 700; color: #f59e0b; text-transform: uppercase; background: #111827; border-bottom: 1px solid #1f293d;">⭐ Favorite Chats</div>
+                        <div id="favoriteChatsContainer" style="max-height: 120px; overflow-y: auto;">
+                            <!-- Populated dynamically -->
+                        </div>
+
+                        <div style="padding: 8px 12px; font-size: 0.72rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; background: #111827; border-bottom: 1px solid #1f293d; border-top: 1px solid #1f293d;">💬 All Chats</div>
+                        <div id="allChatsContainer" style="flex: 1; overflow-y: auto; max-height: 200px;">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+               <!-- 3. User Transaction Approval Queue (Up to 50 Recent Items - Scrollable) -->
+            <div class="card-box" style="grid-column: 1 / -1;">
+                <div class="card-title">
+                    <i data-lucide="clock"></i> User Transaction Ledger Approvals (Showing up to 50 Recent)
+                </div>
+                <div class="table-responsive" style="max-height: 260px; overflow-y: auto;">
+                    <table>
+                        <thead>
+                            <tr style="background-color: #1f293d; text-align: left; position: sticky; top: 0; z-index: 2;">
+                                <th>Ref ID</th>
+                                <th>Customer Name</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th style="text-align: right;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTransactionTable">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+      
+    <!-- Registered Users Table Section (Scrollable & Sorted New-to-Old) -->
+    <div class="container" style="margin-top: 10px; margin-bottom: 30px;">
+        <div style="background-color: #131b2e; border: 1px solid #1f293d; padding: 20px; border-radius: 20px;">
+            <h2 style="color: #ffffff; margin-bottom: 15px; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                <i data-lucide="database"></i> Registered Users Database (Live Cloud Sync)
+            </h2>
+            <div class="table-responsive" style="max-height: 260px; overflow-y: auto;">
+                <table id="usersTable">
+                    <thead>
+                        <tr style="background-color: #1f293d; text-align: left; position: sticky; top: 0; z-index: 2;">
+                            <th>Full Name</th>
+                            <th>Email Address</th>
+                            <th>IP Address & Location</th>
+                            <th>Registration Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="firebaseUsersTableBody">
+                        <!-- Live users load here automatically from Firebase -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+        
+    <!-- Fully Connected Firebase Admin Script Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs, 
+            query, 
+            orderBy, 
+            limit,
+            onSnapshot, 
+            serverTimestamp,
+            addDoc,
+            doc,
+            updateDoc 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD2bEOJQ3-IW1nBbLu8dp_oafib6jzZDFE",
+            authDomain: "global-crypto-asset.firebaseapp.com",
+            projectId: "global-crypto-asset",
+            storageBucket: "global-crypto-asset.firebasestorage.app",
+            messagingSenderId: "524248144264",
+            appId: "1:524248144264:web:9188f437897fb540c7023d",
+            measurementId: "G-8DLEG73RMM"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.liveCustomers = [];
+        let unsubscribeAdminChat = null;
+        window.unreadMessageTrackers = window.windowUnreadTrackers || {};
+
+        function adminLogout() {
+            localStorage.removeItem('gca_admin_logged_in');
+            window.location.href = 'index.html';
+        }
+        window.adminLogout = adminLogout;
+
+        let currentChatEmail = null;
+        let activeCustomerEmail = null;
+        let activeCustomerDocId = null;
+
+        function filterCustomerList() {
+            const input = document.getElementById('customerSearchInput');
+            if (!input) return;
+            const queryVal = input.value.toLowerCase();
+            const items = document.querySelectorAll('.customer-item');
+
+            items.forEach((item) => {
+                const email = item.getAttribute('data-email') || '';
+                const location = item.getAttribute('data-location') || '';
+                if (email.includes(queryVal) || location.includes(queryVal)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+                window.filterCustomerList = filterCustomerList;
+    
+        /**
+         * @param {string} email
+         * @param {string} name
+         * @param {string} ip
+         * @param {string} location
+         * @param {string} docId
+         */
+        window.selectCustomer = function(email, name, ip, location, docId) {
+            activeCustomerEmail = email;
+            activeCustomerDocId = docId;
+            document.getElementById('selectedCustomerTitle').innerText = `Managing: ${name}`;
+            document.getElementById('selectedCustomerMeta').innerText = `Email: ${email} | IP: ${ip} | Location: ${location}`;
+            document.getElementById('flashControlPanel').style.display = 'block';
+
+            const foundCust = (window.liveCustomers || []).find((/** @type {{email: string}} */ c) => c.email === email);
+            const balances = (foundCust && foundCust.balances) ? foundCust.balances : {};
+
+            document.getElementById('flashBtc').value = balances.btc || '0.00 BTC';
+            document.getElementById('flashEth').value = balances.eth || '0.00 ETH';
+            document.getElementById('flashUsdt').value = balances.usdt || '$0.00';
+            document.getElementById('flashBnb').value = balances.bnb || '0.00 BNB';
+            document.getElementById('flashSol').value = balances.sol || '0.00 SOL';
+            document.getElementById('flashLtc').value = balances.ltc || '0.00 LTC';
+        };
+
+
+                /**
+         * @param {string} fieldId
+         * @param {string} symbol
+         */
+        window.flashSingleCrypto = async function(fieldId, symbol) {
+            if (!activeCustomerEmail || !activeCustomerDocId) {
+                alert('Please select a valid customer first.');
+                return;
+            }
+
+            const inputElem = /** @type {HTMLInputElement} */ (document.getElementById(`flash${fieldId.charAt(0).toUpperCase() + fieldId.slice(1)}`));
+            if (!inputElem) return;
+
+            const value = inputElem.value.trim() || (symbol === 'USDT' ? '$0.00' : `0.00 ${symbol}`);
+
+            try {
+                await updateDoc(doc(db, "users", activeCustomerDocId), {
+                    [`balances.${fieldId}`]: value
+                });
+                alert(`Successfully flashed & synced ${symbol} balance to: ${value} for ${activeCustomerEmail} [Cloud Synced]`);
+            } catch (error) {
+                console.error("Error updating cloud balance in Firestore:", error);
+                alert(`Cloud sync failed: ${/** @type {Error} */(error).message}`);
+            }
+        
+          
+        };
+
+        // --- Live Support Chat List Rendering (Sorted New-to-Old) ---
+        window.loadWaChats = async function() {
+            const favContainer = document.getElementById('favoriteChatsContainer');
+            const allContainer = document.getElementById('allChatsContainer');
+            if (!favContainer || !allContainer || currentChatEmail) return;
+
+            let customers = window.liveCustomers || [];
+            let favoriteChats = JSON.parse(localStorage.getItem('gca_favorite_chats')) || [];
+
+            if (customers.length === 0) {
+                allContainer.innerHTML = `<div style="font-size:0.75rem; color:#9ca3af; text-align:center; padding:12px;">No customer chats available.</div>`;
+                return;
+            }
+
+            let chatList = [];
+
+            for (const cust of customers) {
+                const email = cust.email || "";
+                const name = cust.name || "User";
+                const isFavorite = favoriteChats.includes(email);
+                
+                let lastMsg = "New conversation";
+                let lastTime = 0;
+
+                try {
+                    const msgQuery = query(collection(db, "chats", email, "messages"), orderBy("timestamp", "desc"), limit(1));
+                    const msgSnap = await getDocs(msgQuery);
+                    if (!msgSnap.empty) {
+                        const mData = msgSnap.docs[0].data();
+                        lastMsg = (mData.sender === 'admin' || mData.sender === 'outgoing') ? `Admin: ${mData.text}` : mData.text;
+                        if (mData.timestamp && mData.timestamp.toMillis) {
+                            lastTime = mData.timestamp.toMillis();
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Chat timestamp load error:", e);
+                }
+
+                const isUnread = (window.unreadMessageTrackers && window.unreadMessageTrackers[email] === true);
+
+                chatList.push({
+                    email,
+                    name,
+                    isFavorite,
+                    lastMsg,
+                    lastTime,
+                    isUnread,
+                    initial: name.charAt(0).toUpperCase()
+                });
+            }
+
+            // SORT: Unread first, then Newest to Oldest timestamp
+            chatList.sort((a, b) => {
+                if (a.isUnread !== b.isUnread) return a.isUnread ? -1 : 1;
+                return b.lastTime - a.lastTime;
+            });
+
+            let favHtml = '';
+            let allHtml = '';
+            let hasFavorites = false;
+
+            chatList.forEach((chat) => {
+                const redDotHtml = chat.isUnread ? `<span class="red-dot"></span>` : '';
+                const unreadBadgeHtml = chat.isUnread ? `<span class="unread-badge">NEW</span>` : '';
+
+                const chatHtml = `
+                    <div class="wa-chat-item ${chat.isFavorite ? 'favorite' : ''}" style="${chat.isUnread ? 'background-color: rgba(239, 68, 68, 0.08); border-left: 3px solid #ef4444;' : ''}">
+                        <div style="display:flex; align-items:center; gap:10px; flex:1; overflow:hidden;" onclick="window.openWaChat('${chat.email}', '${chat.name}')">
+                            <div class="wa-avatar">
+                                ${chat.initial}
+                                ${redDotHtml}
+                            </div>
+                            <div class="wa-chat-info">
+                                <div class="wa-chat-name">
+                                    ${chat.name} ${unreadBadgeHtml}
+                                </div>
+                                <div class="wa-chat-preview" style="${chat.isUnread ? 'color: #38bdf8; font-weight: 700;' : ''}">${chat.lastMsg}</div>
+                            </div>
+                        </div>
+                        <div class="wa-chat-actions">
+                            <button class="fav-btn ${chat.isFavorite ? 'active' : ''}" onclick="window.toggleFavoriteChat(event, '${chat.email}')" title="Favorite Chat">⭐</button>
+                        </div>
+                    </div>
+                `;
+
+                if (chat.isFavorite) {
+                    hasFavorites = true;
+                    favHtml += chatHtml;
+                } else {
+                    allHtml += chatHtml;
+                }
+            });
+
+            favContainer.innerHTML = hasFavorites ? favHtml : `<div style="font-size:0.72rem; color:#6b7280; text-align:center; padding:8px;">No favorite chats yet. Click ⭐ to add.</div>`;
+            allContainer.innerHTML = allHtml;
+        };
+
+                /**
+         * @param {MouseEvent} event
+         * @param {string} email
+         */
+        window.toggleFavoriteChat = function(event, email) {
+            event.stopPropagation();
+            let favoriteChats = JSON.parse(localStorage.getItem('gca_favorite_chats')) || [];
+            if (favoriteChats.includes(email)) {
+                favoriteChats = favoriteChats.filter((/** @type {string} */ e) => e !== email);
+            } else {
+                favoriteChats.push(email);
+            }
+            localStorage.setItem('gca_favorite_chats', JSON.stringify(favoriteChats));
+            window.loadWaChats();
+        };
+
+                /**
+         * @param {string} email
+         * @param {string} name
+         */
+        window.openWaChat = function(email, name) {
+            currentChatEmail = email;
+            if (window.unreadMessageTrackers) {
+                window.unreadMessageTrackers[email] = false;
+            }
+
+            document.getElementById('waSidebar').style.display = 'none';
+            document.getElementById('waActiveChat').style.display = 'flex';
+            document.getElementById('waActiveChatTitle').innerText = name;
+
+            if (unsubscribeAdminChat) unsubscribeAdminChat();
+
+            const messagesRef = collection(db, "chats", email, "messages");
+            const q = query(messagesRef, orderBy("timestamp", "asc"));
+
+            unsubscribeAdminChat = onSnapshot(q, (/** @type {import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").QuerySnapshot} */ snapshot) => {
+                const chatBox = document.getElementById('waMessagesBox');
+                if (!chatBox) return;
+                chatBox.innerHTML = '';
+
+                if (snapshot.empty) {
+                    chatBox.innerHTML = `<div class="wa-msg incoming">Hello, I need assistance with my account.</div>`;
+                    return;
+                }
+
+                snapshot.forEach((/** @type {import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").DocumentData} */ doc) => {
+                    const msg = doc.data();
+                    let cssClass = (msg.sender === 'admin' || msg.sender === 'outgoing') ? 'wa-msg outgoing' : 'wa-msg incoming';
+                    chatBox.innerHTML += `<div class="${cssClass}">${msg.text}</div>`;
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, (/** @type {Error} */ error) => {
+                console.error("Error listening to live customer chat:", error);
+            });
+
+            window.loadWaChats();
+        };
+
+        window.closeWaChat = function() {
+            if (unsubscribeAdminChat) {
+                unsubscribeAdminChat();
+                unsubscribeAdminChat = null;
+            }
+            currentChatEmail = null;
+            document.getElementById('waActiveChat').style.display = 'none';
+            document.getElementById('waSidebar').style.display = 'flex';
+            window.loadWaChats();
+        };
+
+        window.sendWaReply = async function() {
+            const input = document.getElementById('waReplyInput');
+            if (!input || !currentChatEmail) return;
+            const text = input.value.trim();
+
+            if (text !== "") {
+                try {
+                    await addDoc(collection(db, "chats", currentChatEmail, "messages"), {
+                        sender: 'admin',
+                        text: text,
+                        timestamp: serverTimestamp()
+                    });
+                    input.value = "";
+                } catch (error) {
+                    console.error("Error sending admin reply to Firebase:", error);
+                    alert("Failed to send message over cloud connection.");
+                }
+            }
+        };
+      // --- Registered Users & Flashing List (Sorted New-to-Old with Deduplication) ---
+                function listenToRegisteredUsers() {
+            const usersRef = collection(db, "users");
+            const q = query(usersRef, orderBy("registeredAt", "desc"));
+
+            onSnapshot(q, (/** @type {import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").QuerySnapshot} */ snapshot) => {
+                const customerContainer = document.getElementById('customerListContainer');
+                const tableBody = document.getElementById('firebaseUsersTableBody');
+                if (!customerContainer || !tableBody) return;
+
+                let custHtml = '';
+                let tableHtml = '';
+                window.liveCustomers = [];
+                const uniqueEmailsMap = new Map();
+
+                if (snapshot.empty) {
+                    customerContainer.innerHTML = `<div style="font-size:0.78rem; color:#9ca3af; text-align:center; padding:10px;">No registered customers yet.</div>`;
+                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#9ca3af; padding:12px;">No registered customers found in cloud database.</td></tr>`;
+                    return;
+                }
+
+
+                   snapshot.forEach((/** @type {import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").DocumentData} */ docSnap) => {
+                    const cust = docSnap.data();
+                    cust.id = docSnap.id;
+                    const emailKey = (cust.email || "").toLowerCase();
+
+                    if (emailKey && !uniqueEmailsMap.has(emailKey)) {
+                        uniqueEmailsMap.set(emailKey, true);
+                        window.liveCustomers.push(cust);
+
+                        const name = cust.name || "User";
+                        const email = cust.email || "N/A";
+                        const ip = cust.ip || "N/A";
+                        const location = cust.location || "Unknown Location";
+                        const docId = docSnap.id;
+                        
+                        let regDate = "Recent";
+                        if (cust.registeredAt && cust.registeredAt.toDate) {
+                            regDate = cust.registeredAt.toDate().toLocaleString();
+                        }
+
+
+                        custHtml += `
+                            <div class="customer-item" data-email="${email.toLowerCase()}" data-location="${location.toLowerCase()}" onclick="window.selectCustomer('${email}', '${name}', '${ip}', '${location}', '${docId}')" style="background: #0b0f19; border: 1px solid #1f293d; padding: 10px 12px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: border-color 0.2s; margin-bottom: 6px;">
+                                <div>
+                                    <div style="font-weight: 700; color: #ffffff; font-size: 0.85rem;">${name}</div>
+                                    <div style="font-size: 0.72rem; color: #9ca3af;">${email}</div>
+                                    <div style="font-size: 0.7rem; color: #10b981; margin-top: 2px;">🌐 IP: ${ip} (${location})</div>
+                                </div>
+                                <span style="font-size: 0.72rem; color: #60a5fa; font-weight: 700;">Tap to Flash &rarr;</span>
+                            </div>
+                        `;
+
+                        tableHtml += `
+                            <tr>
+                                <td style="font-weight: 700; color: #ffffff;">${name}</td>
+                                <td>${email}</td>
+                                <td><span style="color: #38bdf8;">${ip}</span> <span style="color: #10b981; font-size: 0.75rem;">(${location})</span></td>
+                                <td>${regDate}</td>
+                            </tr>
+                        `;
+                    }
+                });
+
+                customerContainer.innerHTML = custHtml;
+                tableBody.innerHTML = tableHtml;
+
+                window.loadWaChats();
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                        }, (/** @type {Error} */ error) => {
+                console.error("Error listening to users collection:", error);
+            });
+        }
+
+
+                function monitorAllChatsForNotifications() {
+            if (!window.liveCustomers) return;
+            window.liveCustomers.forEach((/** @type {{email: string}} */ cust) => {
+                const email = cust.email;
+                if (!email || email === currentChatEmail) return;
+
+                const chatRef = collection(db, "chats", email, "messages");
+                const q = query(chatRef, orderBy("timestamp", "desc"), limit(1));
+                getDocs(q).then((/** @type {import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").QuerySnapshot} */ snapshot) => {
+                    if (!snapshot.empty) {
+                        const latestDoc = snapshot.docs[0];
+                        const latestMsg = latestDoc.data();
+                        
+                        if (latestMsg.sender === 'user' || latestMsg.sender === 'incoming') {
+                            const lastReadIdKey = `gca_last_read_${email}`;
+                            const storedLastReadId = localStorage.getItem(lastReadIdKey);
+
+                            if (storedLastReadId !== latestDoc.id) {
+                                window.unreadMessageTrackers[email] = true;
+                                window.loadWaChats();
+                            }
+                        }
+                    }
+                }).catch((/** @type {Error} */ err) => console.error("Error checking notifications:", err));
+            });
+        } 
+
+            // --- Fully Connected Transaction Ledger (Firebase Cloud Firestore Live Sync) ---
+        let unsubscribeAdminTransactions = null;
+        window.loadAdminTransactions = function() {
+            const tbody = document.getElementById('adminTransactionTable');
+            if (!tbody || unsubscribeAdminTransactions) return;
+
+            const txQuery = query(collection(db, "transactions"), orderBy("timestamp", "desc"));
+            unsubscribeAdminTransactions = onSnapshot(txQuery, (/** @type {import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").QuerySnapshot} */ snapshot) => {
+                tbody.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#9ca3af; padding:12px;">No withdrawal requests found in cloud.</td></tr>`;
+                    return;
+                }
+
+                snapshot.forEach((/** @type {import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js").DocumentData} */ docSnap) => {
+                    let tx = { docId: docSnap.id, ...docSnap.data() };
+                    let actionCell = '';
+
+                    if (tx.status === 'Pending') {
+                        actionCell = `
+                            <button class="btn-sm btn-approve" onclick="updateTxStatus('${tx.docId}', 'Successful')">Approve</button>
+                            <button class="btn-sm btn-reject" onclick="updateTxStatus('${tx.docId}', 'Declined')">Decline</button>
+                        `;
+                    } else {
+                        let color = tx.status === 'Successful' ? '#10b981' : '#ef4444';
+                        let displayStatusText = (tx.status === 'Declined' || tx.status === 'Rejected') ? '(Insufficient gas ⛽ fee)' : tx.status;
+                        actionCell = `<span style="color: ${color}; font-weight:700;">${displayStatusText}</span>`;
+                    }
+
+                    let custName = tx.customerName || tx.email || 'Investor';
+                    let refId = tx.id || tx.docId.substring(0, 8);
+                    let txType = tx.type || 'Withdrawal';
+                    let txAmount = tx.amount || '0.00';
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><b>${refId}</b></td>
+                            <td style="color: #60a5fa; font-weight: 700;">${custName}</td>
+                            <td>${txType}</td>
+                            <td>${txAmount}</td>
+                            <td style="text-align: right;">${actionCell}</td>
+                        </tr>
+                    `;
+                });
+            }, (/** @type {Error} */ error) => {
+                console.error("Error listening to Firestore transactions collection:", error);
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#ef4444; padding:12px;">Failed to load cloud transactions ledger.</td></tr>`;
+            });
+        };
+
+                  /**
+         * @param {string} docId
+         * @param {string} newStatus
+         */
+        window.updateTxStatus = async function(docId, newStatus) {
+            try {
+                await updateDoc(doc(db, "transactions", docId), {
+                    status: newStatus
+                });
+                alert(`Transaction status successfully updated to ${newStatus} in Firestore cloud!`);
+            } catch (error) {
+                console.error("Error updating transaction status in Firestore:", error);
+                alert(`Failed to update status on cloud: ${/** @type {Error} */(error).message}`);
+            }
+        };
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (localStorage.getItem("gca_admin_logged_in") !== "true") {
+                alert("Unauthorized access! Please login as administrator first.");
+                window.location.href = "index.html";
+                return;
+            }
+
+            listenToRegisteredUsers();
+            window.loadAdminTransactions();
+
+            setInterval(monitorAllChatsForNotifications, 5000);
+        });
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
